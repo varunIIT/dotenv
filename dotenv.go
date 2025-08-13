@@ -92,6 +92,18 @@ func (d *dotenv) Overload() error {
 	return nil
 }
 
+func (d *dotenv) OverloadWatchFiles() error {
+	parsedFiles := d.opts.ParseWatchFilePaths()
+	for _, parsedFile := range parsedFiles {
+		if err := loadFile(parsedFile, true); err != nil && d.opts.debug {
+			log.Println(fmt.Sprintf("[dotenv] Overloading parsedFile %s failed with error %s", parsedFile, err.Error()))
+			continue
+		}
+		d.files = append(d.files, parsedFile)
+	}
+	return nil
+}
+
 func new() *dotenv {
 	return &dotenv{opts: newOpts()}
 }
